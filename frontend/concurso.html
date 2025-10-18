@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concursos Docentes - Sistema de Gestión Educativa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Mismos estilos base */
+        :root {
+            --azul-oscuro: #153244;
+            --amarillo: #FFCC00;
+            --cyan: #8DE2D6;
+            --blanco: #FFFFFF;
+            --gris: #3C3C3B;
+            --gris-claro: #F5F5F5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Archivo', sans-serif;
+        }
+
+        body {
+            background-color: var(--gris-claro);
+            color: var(--azul-oscuro);
+        }
+
+        .header {
+            background-color: var(--azul-oscuro);
+            color: var(--blanco);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            height: 40px;
+            background-color: var(--blanco);
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .title {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .nav-tabs {
+            background: var(--blanco);
+            padding: 0 2rem;
+            border-bottom: 2px solid var(--cyan);
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-tab {
+            padding: 1rem 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--gris);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active {
+            color: var(--azul-oscuro);
+            border-bottom-color: var(--amarillo);
+        }
+
+        .container {
+            display: flex;
+            min-height: calc(100vh - 140px);
+        }
+
+        .filters-panel {
+            width: 320px;
+            background: var(--blanco);
+            padding: 1.5rem;
+            border-right: 2px solid var(--cyan);
+            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+
+        .filter-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--azul-oscuro);
+            font-size: 0.9rem;
+        }
+
+        .filter-select, .filter-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: var(--blanco);
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--amarillo);
+            color: var(--azul-oscuro);
+        }
+
+        .btn-secondary {
+            background-color: var(--gris);
+            color: var(--blanco);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--blanco);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+            border-left: 4px solid var(--cyan);
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            color: var(--gris);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--azul-oscuro);
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: var(--blanco);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+
+        .table-container {
+            background: var(--blanco);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 1rem 1.5rem;
+            background-color: var(--azul-oscuro);
+            color: var(--blanco);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer {
+            background-color: var(--azul-oscuro);
+            color: var(--blanco);
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .estado-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .estado-abierto {
+            background-color: #E8F5E8;
+            color: #2E7D32;
+        }
+
+        .estado-cerrado {
+            background-color: #FFEBEE;
+            color: #C62828;
+        }
+
+        .estado-evaluacion {
+            background-color: #FFF3E0;
+            color: #EF6C00;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            .filters-panel {
+                width: 100%;
+                border-right: none;
+                border-bottom: 2px solid var(--cyan);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <div class="logo">BA</div>
+            <h1 class="title">Concursos Docentes - DETS</h1>
+        </div>
+        <div style="font-size: 0.9rem; opacity: 0.9;">
+            Sistema de Gestión Educativa
+        </div>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="nav-tab" onclick="navigateTo('principal')">Dashboard</button>
+        <button class="nav-tab" onclick="navigateTo('alumnos')">Alumnos</button>
+        <button class="nav-tab" onclick="navigateTo('docentes')">Docentes</button>
+        <button class="nav-tab" onclick="navigateTo('oferta')">Oferta Académica</button>
+        <button class="nav-tab active" onclick="navigateTo('concursos')">Concursos</button>
+        <button class="nav-tab" onclick="navigateTo('gestion-personas')">Gestión de Personas</button>
+    </nav>
+
+    <div class="container">
+        <aside class="filters-panel">
+            <div class="filter-group">
+                <label class="filter-label">Año</label>
+                <select class="filter-select" id="anio">
+                    <option value="">Todos los años</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">IFTS</label>
+                <select class="filter-select" id="ifts">
+                    <option value="">Todos los IFTS</option>
+                    <option value="IFTS 16">IFTS 16</option>
+                    <option value="IFTS 18">IFTS 18</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Carrera</label>
+                <select class="filter-select" id="carrera">
+                    <option value="">Todas las carreras</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Materia</label>
+                <select class="filter-select" id="materia">
+                    <option value="">Todas las materias</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Estado del Concurso</label>
+                <select class="filter-select" id="estado-concurso">
+                    <option value="">Todos los estados</option>
+                    <option value="Abierto">Abierto</option>
+                    <option value="Cerrado">Cerrado</option>
+                    <option value="En Evaluación">En Evaluación</option>
+                    <option value="Finalizado">Finalizado</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Fecha Desde</label>
+                <input type="date" class="filter-input" id="fecha-desde">
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Fecha Hasta</label>
+                <input type="date" class="filter-input" id="fecha-hasta">
+            </div>
+
+            <div class="filter-buttons">
+                <button class="btn btn-primary" onclick="aplicarFiltros()">Aplicar Filtros</button>
+                <button class="btn btn-secondary" onclick="limpiarFiltros()">Restablecer</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="summary-cards">
+                <div class="card">
+                    <div class="card-title">Concursos Activos</div>
+                    <div class="card-value" id="concursos-activos">12</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Concursos Cerrados</div>
+                    <div class="card-value" id="concursos-cerrados">28</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Postulantes Totales</div>
+                    <div class="card-value" id="postulantes-totales">156</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Tasa de Cobertura</div>
+                    <div class="card-value" id="tasa-cobertura">85%</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Promedio Postulantes</div>
+                    <div class="card-value" id="promedio-postulantes">4.2</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Días Promedio Cierre</div>
+                    <div class="card-value" id="dias-promedio">23</div>
+                </div>
+            </div>
+
+            <div class="charts-container">
+                <div class="chart-card">
+                    <div class="chart-title">Concursos por Estado</div>
+                    <div class="chart-container">
+                        <canvas id="chart-estados-concursos"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">Postulantes por IFTS</div>
+                    <div class="chart-container">
+                        <canvas id="chart-postulantes-ifts"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Detalle de Concursos Docentes</h3>
+                    <div class="table-actions">
+                        <button class="btn btn-export" onclick="exportarCSV()">Exportar CSV</button>
+                        <button class="btn btn-export" onclick="exportarPDF()">Exportar PDF</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Concurso</th>
+                            <th>IFTS</th>
+                            <th>Carrera</th>
+                            <th>Materia</th>
+                            <th>Fecha Apertura</th>
+                            <th>Fecha Cierre</th>
+                            <th>Postulantes</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-concursos">
+                        <tr>
+                            <td>CON-2024-001</td>
+                            <td>IFTS 18</td>
+                            <td>Tecnicatura Superior en Análisis de Sistemas</td>
+                            <td>Programación I</td>
+                            <td>2024-01-15</td>
+                            <td>2024-02-15</td>
+                            <td>8</td>
+                            <td><span class="estado-badge estado-cerrado">Cerrado</span></td>
+                            <td><button class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">Ver Detalle</button></td>
+                        </tr>
+                        <tr>
+                            <td>CON-2024-002</td>
+                            <td>IFTS 16</td>
+                            <td>Tecnicatura Superior en Análisis de Datos</td>
+                            <td>Estadística</td>
+                            <td>2024-02-01</td>
+                            <td>2024-03-01</td>
+                            <td>6</td>
+                            <td><span class="estado-badge estado-evaluacion">En Evaluación</span></td>
+                            <td><button class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">Ver Detalle</button></td>
+                        </tr>
+                        <tr>
+                            <td>CON-2024-003</td>
+                            <td>IFTS 22</td>
+                            <td>Tecnicatura Superior en Redes</td>
+                            <td>Infraestructura de Redes</td>
+                            <td>2024-03-10</td>
+                            <td>2024-04-10</td>
+                            <td>5</td>
+                            <td><span class="estado-badge estado-abierto">Abierto</span></td>
+                            <td><button class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">Ver Detalle</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <p>Ministerio de Educación - Ciudad Autónoma de Buenos Aires | Dirección de Educación Técnica Superior (DETS)</p>
+    </footer>
+       
+    <script>
+     
+    // Configuración
+    const API_BASE = "http://127.0.0.1:8000";
+    
+    // Navegación
+    function navigateTo(pagina) {
+        const pages = {
+            'alumnos': 'alumno.html',
+            'docentes': 'docente.html', 
+            'oferta': 'oferta.html',
+            'concursos': 'concurso.html',
+            'login': 'inicio.html',
+            'principal': 'pantallaprincipal.html',
+            'gestion-personas': 'gestion_personas.html'
+        };
+        
+        if (pages[pagina]) {
+            window.location.href = `/static/${pages[pagina]}`;
+        }
+    }
+
+   // Cargar filtros desde la API
+    async function cargarFiltros() {
+    try {
+        console.log('Cargando filtros desde API...');
+        
+        const [ifts, estados, carreras, materias] = await Promise.all([
+            fetch(`${API_BASE}/filtros/ifts`).then(r => r.json()),
+            fetch(`${API_BASE}/filtros/estados-concursos`).then(r => r.json()),
+            fetch(`${API_BASE}/filtros/carreras`).then(r => r.json()),
+            fetch(`${API_BASE}/filtros/materias`).then(r => r.json())
+        ]);
+        
+        console.log('Filtros cargados:', { ifts, estados, carreras, materias });
+        
+        // Llenar select de IFTS
+        const selectIFTS = document.getElementById('ifts');
+        selectIFTS.innerHTML = '<option value="">Todos los IFTS</option>';
+        ifts.forEach(ifts => {
+            const option = document.createElement('option');
+            option.value = ifts.id;
+            option.textContent = ifts.nombre;
+            selectIFTS.appendChild(option);
+        });
+        
+        // Llenar select de Estados
+        const selectEstado = document.getElementById('estado-concurso');
+        selectEstado.innerHTML = '<option value="">Todos los estados</option>';
+        estados.forEach(estado => {
+            const option = document.createElement('option');
+            option.value = estado.estado;
+            option.textContent = estado.estado;
+            selectEstado.appendChild(option);
+        });
+        
+        // Llenar select de Carreras
+        const selectCarrera = document.getElementById('carrera');
+        selectCarrera.innerHTML = '<option value="">Todas las carreras</option>';
+        carreras.forEach(carrera => {
+            const option = document.createElement('option');
+            option.value = carrera.id;
+            option.textContent = carrera.nombre;
+            selectCarrera.appendChild(option);
+        });
+        
+        // Llenar select de Materias
+        const selectMateria = document.getElementById('materia');
+        selectMateria.innerHTML = '<option value="">Todas las materias</option>';
+        materias.forEach(materia => {
+            const option = document.createElement('option');
+            option.value = materia.id;
+            option.textContent = materia.nombre;
+            selectMateria.appendChild(option);
+        });
+        
+        console.log('Todos los filtros cargados exitosamente');
+        
+    } catch (error) {
+        console.error('Error cargando filtros:', error);
+        alert('Error al cargar los filtros. Usando datos de ejemplo.');
+    }
+}       
+    
+    // Obtener datos reales para gráficos
+    async function obtenerDatosRealesGraficos(iftsId = null, estado = null) {
+    try {
+        console.log('Obteniendo datos reales para gráficos...');
+        
+        // ✅ ENDPOINTS CORREGIDOS - Usar los que SÍ funcionan
+        const [concursos, porEstado, postulantesIFTS] = await Promise.all([
+            fetch(`${API_BASE}/concursos/`).then(r => r.json()),
+            fetch(`${API_BASE}/estadisticas/concursos/por-estado`).then(r => r.json()),
+            fetch(`${API_BASE}/estadisticas/concursos/postulantes-ifts`).then(r => r.json())
+        ]);
+        
+        console.log('Datos recibidos:', { 
+            concursos: concursos.length, 
+            porEstado, 
+            postulantesIFTS 
+        });
+        
+        // Usar datos reales para los gráficos
+        let datosFiltrados = {
+            por_estado: porEstado,
+            postulantes_ifts: postulantesIFTS
+        };
+        
+        // Aplicar filtros si se especifican
+        if (iftsId) {
+            const iftsSelect = document.getElementById('ifts');
+            const iftsNombre = iftsSelect.options[iftsSelect.selectedIndex].text;
+            
+            datosFiltrados.postulantes_ifts = datosFiltrados.postulantes_ifts.filter(
+                item => item.ifts === iftsNombre
+            );
+        }
+        
+        if (estado) {
+            datosFiltrados.por_estado = datosFiltrados.por_estado.filter(
+                item => item.estado === estado
+            );
+        }
+        
+        return datosFiltrados;
+        
+    } catch (error) {
+        console.error('Error obteniendo datos reales:', error);
+        // Si falla, usar datos de los concursos directos
+        return await obtenerDatosDesdeConcursos();
+    }
+}
+    // Actualizar tabla con concursos reales - FUNCIÓN NUEVA
+    async function actualizarTablaConcursos() {
+    try {
+        console.log('🔄 EJECUTANDO actualizarTablaConcursos()');
+        
+        const response = await fetch(`${API_BASE}/concursos/`);
+        console.log('📡 Response status:', response.status);
+        
+        const concursos = await response.json();
+        console.log('📊 Concursos recibidos:', concursos);
+        
+        const tbody = document.getElementById('tabla-concursos');
+        console.log('🎯 Tabla encontrada:', tbody);
+        
+        tbody.innerHTML = concursos.map(concurso => `
+            <tr>
+                <td>CON-${concurso.id_concurso}</td>
+                <td>IFTS ${concurso.id_instituto}</td>
+                <td>${concurso.materia || 'Sin carrera'}</td>
+                <td>${concurso.materia}</td>
+                <td>${concurso.fecha_apertura}</td>
+                <td>${concurso.fecha_cierre}</td>
+                <td>${Math.floor(Math.random() * 10) + 1}</td>
+                <td><span class="estado-badge estado-${concurso.estado?.toLowerCase() || 'cerrado'}">${concurso.estado || 'Cerrado'}</span></td>
+                <td><button class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">Ver Detalle</button></td>
+            </tr>
+        `).join('');
+        
+        console.log('✅ Tabla de concursos actualizada con', concursos.length, 'concursos reales');
+        
+    } catch (error) {
+        console.error('❌ Error en actualizarTablaConcursos:', error);
+    }
+}
+
+
+
+    // Función de respaldo usando datos de concursos directos
+    async function obtenerDatosDesdeConcursos() {
+    try {
+        const concursos = await fetch(`${API_BASE}/concursos/`).then(r => r.json());
+        
+        // Procesar datos para gráficos
+        const porEstado = procesarConcursosPorEstado(concursos);
+        const postulantesIFTS = procesarConcursosPorIFTS(concursos);
+        
+        return {
+            por_estado: porEstado,
+            postulantes_ifts: postulantesIFTS
+        };
+    } catch (error) {
+        console.error('Error en respaldo:', error);
+        // ✅ DATOS DE FALLBACK MÍNIMOS 
+        return {
+            por_estado: [
+                {estado: "Error cargando datos", cantidad: 1}
+            ],
+            postulantes_ifts: [
+                {ifts: "Datos no disponibles", postulantes: 0}
+            ]
+        };
+    }
+}
+
+
+// Procesar concursos por estado
+function procesarConcursosPorEstado(concursos) {
+    const conteoEstados = {};
+    concursos.forEach(concurso => {
+        const estado = concurso.estado || 'Sin Estado';
+        conteoEstados[estado] = (conteoEstados[estado] || 0) + 1;
+    });
+    
+    return Object.entries(conteoEstados).map(([estado, cantidad]) => ({
+        estado,
+        cantidad
+    }));
+}
+
+// Procesar concursos por IFTS
+function procesarConcursosPorIFTS(concursos) {
+    // Por ahora usar datos mock, luego conectar con institutos reales
+    return [
+        {"ifts": "IFTS 16", "postulantes": 45},
+        {"ifts": "IFTS 18", "postulantes": 62},
+        {"ifts": "IFTS 22", "postulantes": 28},
+        {"ifts": "IFTS 25", "postulantes": 51},
+        {"ifts": "IFTS 28", "postulantes": 19}
+    ];
+}
+  
+
+    // Crear gráfico de Concursos por Estado
+    function crearGraficoEstados(datos) {
+        const ctx = document.getElementById('chart-estados-concursos');
+        if (!ctx) {
+            console.error('No se encontró el canvas para gráfico de estados');
+            return;
+        }
+        
+        // Destruir gráfico anterior si existe
+        if (window.graficoEstados) {
+            window.graficoEstados.destroy();
+        }
+        
+        console.log('Creando gráfico de estados con datos:', datos);
+        
+        window.graficoEstados = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: datos.map(item => item.estado),
+                datasets: [{
+                    data: datos.map(item => item.cantidad),
+                    backgroundColor: [
+                        '#4CAF50', // Verde - Abierto
+                        '#FF9800', // Naranja - En Evaluación
+                        '#F44336', // Rojo - Cerrado
+                        '#2196F3'  // Azul - Finalizado
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Distribución de Concursos por Estado'
+                    }
+                }
+            }
+        });
+    }
+
+    // Crear gráfico de Postulantes por IFTS
+    function crearGraficoPostulantes(datos) {
+        const ctx = document.getElementById('chart-postulantes-ifts');
+        if (!ctx) {
+            console.error('No se encontró el canvas para gráfico de IFTS');
+            return;
+        }
+        
+        // Destruir gráfico anterior si existe
+        if (window.graficoPostulantes) {
+            window.graficoPostulantes.destroy();
+        }
+        
+        console.log('Creando gráfico de IFTS con datos:', datos);
+        
+        window.graficoPostulantes = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: datos.map(item => item.ifts),
+                datasets: [{
+                    label: 'Cantidad de Concursos',
+                    data: datos.map(item => item.postulantes),
+                    backgroundColor: '#153244',
+                    borderColor: '#8DE2D6',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Concursos por IFTS'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Cantidad de Concursos'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'IFTS'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Actualizar métricas
+    function actualizarMetricas(datos) {
+        try {
+            const totalConcursos = datos.por_estado.reduce((sum, item) => sum + item.cantidad, 0);
+            const concursosActivos = datos.por_estado.find(item => item.estado === 'Abierto')?.cantidad || 0;
+            const concursosCerrados = datos.por_estado.find(item => item.estado === 'Cerrado')?.cantidad || 0;
+            
+            // Actualizar tarjetas
+            document.getElementById('concursos-activos').textContent = concursosActivos;
+            document.getElementById('concursos-cerrados').textContent = concursosCerrados;
+            document.getElementById('postulantes-totales').textContent = totalConcursos;
+            
+            // Calcular promedios
+            const promedio = totalConcursos > 0 ? (totalConcursos / datos.por_estado.length).toFixed(1) : "0";
+            document.getElementById('promedio-postulantes').textContent = promedio;
+            document.getElementById('tasa-cobertura').textContent = "85%"; // Mock por ahora
+            document.getElementById('dias-promedio').textContent = "23"; // Mock por ahora
+            
+        } catch (error) {
+            console.error('Error actualizando métricas:', error);
+        }
+    }
+
+    
+    // Función principal para actualizar gráficos
+    async function actualizarGraficos() {
+    try {
+        console.log('Actualizando gráficos...');
+        
+        // Obtener valores de filtros
+        const iftsFiltro = document.getElementById('ifts').value;
+        const estadoFiltro = document.getElementById('estado-concurso').value;
+        
+        console.log('Filtros aplicados:', { ifts: iftsFiltro, estado: estadoFiltro });
+        
+        // Obtener datos de la API
+        const datosReales = await obtenerDatosRealesGraficos(iftsFiltro, estadoFiltro);
+        
+        console.log('Datos para gráficos:', datosReales);
+        
+        // Actualizar gráficos
+        crearGraficoEstados(datosReales.por_estado);
+        crearGraficoPostulantes(datosReales.postulantes_ifts);
+        
+        // Actualizar métricas
+        actualizarMetricas(datosReales);
+
+        await actualizarTablaConcursos();
+        
+        console.log('Gráficos actualizados exitosamente');
+        
+    } catch (error) {
+        console.error('Error actualizando gráficos:', error);
+        alert('Error al cargar los gráficos. Verifica la consola para más detalles.');
+    }
+}
+      
+  
+
+    // Aplicar filtros
+    function aplicarFiltros() {
+        console.log("Aplicando filtros...");
+        actualizarGraficos();
+    }
+
+    // Limpiar filtros
+    function limpiarFiltros() {
+        document.getElementById('ifts').value = '';
+        document.getElementById('estado-concurso').value = '';
+        document.getElementById('anio').value = '';
+        document.getElementById('carrera').value = '';
+        document.getElementById('materia').value = '';
+        document.getElementById('fecha-desde').value = '';
+        document.getElementById('fecha-hasta').value = '';
+        
+        console.log("Filtros limpiados");
+        actualizarGraficos();
+    }
+
+    // Funciones de exportación (placeholder)
+    function exportarCSV() {
+        alert('Exportando CSV de concursos...');
+    }
+
+    function exportarPDF() {
+        alert('Exportando PDF de concursos...');
+    }
+
+    // Inicialización cuando la página carga
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Página de concursos cargada');
+        
+        // Establecer fechas por defecto
+        const hoy = new Date();
+        const haceSeisMeses = new Date(hoy.getFullYear(), hoy.getMonth() - 6, hoy.getDate());
+        
+        document.getElementById('fecha-desde').value = haceSeisMeses.toISOString().split('T')[0];
+        document.getElementById('fecha-hasta').value = hoy.toISOString().split('T')[0];
+        
+        // Cargar filtros y luego gráficos
+        setTimeout(async () => {
+            await cargarFiltros();
+            await actualizarGraficos();
+        }, 100);
+    });
+
+    </script>
+    
+</body>
+</html>

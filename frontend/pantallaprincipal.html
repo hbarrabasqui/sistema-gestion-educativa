@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sistema de Gestión Educativa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --azul-oscuro: #153244;
+            --amarillo: #FFCC00;
+            --cyan: #8DE2D6;
+            --blanco: #FFFFFF;
+            --gris: #3C3C3B;
+            --gris-claro: #F5F5F5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Archivo', sans-serif;
+        }
+
+        body {
+            background-color: var(--gris-claro);
+            color: var(--azul-oscuro);
+            min-height: 100vh;
+        }
+
+        .header {
+            background-color: var(--azul-oscuro);
+            color: var(--blanco);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            height: 40px;
+            background-color: var(--blanco);
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-tabs {
+            background: var(--blanco);
+            padding: 0 2rem;
+            border-bottom: 2px solid var(--cyan);
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-tab {
+            padding: 1rem 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--gris);
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-tab.active {
+            color: var(--azul-oscuro);
+            border-bottom-color: var(--amarillo);
+        }
+
+        .main-content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .welcome-section {
+            background: var(--blanco);
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-card {
+            background: var(--blanco);
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            border-left: 4px solid var(--cyan);
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            transition: transform 0.3s ease;
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-description {
+            color: var(--gris);
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-logout {
+            background-color: transparent;
+            color: var(--blanco);
+            border: 1px solid var(--blanco);
+        }
+
+        .btn-logout:hover {
+            background-color: var(--blanco);
+            color: var(--azul-oscuro);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <div class="logo">DETS</div>
+            <h1>Dashboard - Sistema de Gestión</h1>
+        </div>
+        <div class="user-info">
+            <span id="userBadge">Bienvenido, Usuario</span>
+            <button class="btn btn-logout" onclick="logout()">Cerrar Sesión</button>
+        </div>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="nav-tab active">Dashboard</button>
+        <button class="nav-tab" onclick="navigateTo('alumnos')">Alumnos</button>
+        <button class="nav-tab" onclick="navigateTo('docentes')">Docentes</button>
+        <button class="nav-tab" onclick="navigateTo('oferta')">Oferta Académica</button>
+        <button class="nav-tab" onclick="navigateTo('concursos')">Concursos</button>
+        <button class="nav-tab" onclick="navigateTo('gestion-personas')">Gestión de Personas</button>
+    </nav>
+
+    <main class="main-content">
+        <div class="welcome-section">
+            <h1 id="welcomeTitle">Bienvenido al Sistema de Gestión Educativa</h1>
+            <p>Seleccione un módulo para comenzar</p>
+        </div>
+
+        <div class="dashboard-cards">
+            <div class="dashboard-card" onclick="navigateTo('docentes')">
+                <div class="card-icon">👨‍🏫</div>
+                <div class="card-title">Gestión de Docentes</div>
+                <div class="card-description">Administrar docentes y cargas horarias</div>
+            </div>
+
+            <div class="dashboard-card" onclick="navigateTo('alumnos')">
+                <div class="card-icon">👨‍🎓</div>
+                <div class="card-title">Gestión de Alumnos</div>
+                <div class="card-description">Gestionar inscripciones y seguimiento</div>
+            </div>
+
+            <div class="dashboard-card" onclick="navigateTo('concursos')">
+                <div class="card-icon">📋</div>
+                <div class="card-title">Concursos Docentes</div>
+                <div class="card-description">Administrar procesos de selección</div>
+            </div>
+
+            <div class="dashboard-card" onclick="navigateTo('oferta')">
+                <div class="card-icon">🏫</div>
+                <div class="card-title">Oferta Académica</div>
+                <div class="card-description">Gestionar carreras y planes de estudio</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Verificar autenticación
+        function checkAuth() {
+            const usuario = sessionStorage.getItem('usuario');
+            const rol = sessionStorage.getItem('rol');
+            
+            if (!usuario) {
+                window.location.href = 'inicio.html';
+                return;
+            }
+            
+            document.getElementById('userBadge').textContent = `Bienvenido, ${usuario}`;
+            document.getElementById('welcomeTitle').textContent = `Bienvenido ${usuario}`;
+        }
+
+        // Navegación
+        function navigateTo(pagina) {
+            const pages = {
+                'alumnos': 'alumno.html',
+                'docentes': 'docente.html', 
+                'oferta': 'oferta.html',
+                'concursos': 'concurso.html',
+                'login': 'inicio.html',
+                'principal': 'pantallaprincipal.html',
+                'gestion-personas': 'gestion_personas.html'
+            };
+            
+            if (pages[pagina]) {
+                window.location.href = `/static/${pages[pagina]}`;
+            }
+        }
+
+        // Cerrar sesión
+        function logout() {
+            sessionStorage.removeItem('usuario');
+            sessionStorage.removeItem('rol');
+            window.location.href = 'inicio.html';
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+</html>

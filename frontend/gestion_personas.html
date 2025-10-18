@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Personas - Sistema Educativo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --azul-oscuro: #153244;
+            --amarillo: #FFCC00;
+            --cyan: #8DE2D6;
+            --blanco: #FFFFFF;
+            --gris: #3C3C3B;
+            --gris-claro: #F5F5F5;
+            --verde: #4CAF50;
+            --rojo: #F44336;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Archivo', sans-serif;
+        }
+
+        body {
+            background-color: var(--gris-claro);
+            color: var(--azul-oscuro);
+        }
+
+        .header {
+            background-color: var(--azul-oscuro);
+            color: var(--blanco);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            height: 40px;
+            background-color: var(--blanco);
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .title {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .nav-tabs {
+            background: var(--blanco);
+            padding: 0 2rem;
+            border-bottom: 2px solid var(--cyan);
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-tab {
+            padding: 1rem 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--gris);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active {
+            color: var(--azul-oscuro);
+            border-bottom-color: var(--amarillo);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--amarillo);
+            color: var(--azul-oscuro);
+        }
+
+        .btn-success {
+            background-color: var(--verde);
+            color: var(--blanco);
+        }
+
+        .btn-danger {
+            background-color: var(--rojo);
+            color: var(--blanco);
+        }
+
+        .btn-secondary {
+            background-color: var(--gris);
+            color: var(--blanco);
+        }
+
+        .filtros-container {
+            background: var(--blanco);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--azul-oscuro);
+        }
+
+        .filter-input, .filter-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .filter-input:focus, .filter-select:focus {
+            outline: none;
+            border-color: var(--cyan);
+        }
+
+        .table-container {
+            background: var(--blanco);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .table-header {
+            padding: 1.5rem;
+            background-color: var(--azul-oscuro);
+            color: var(--blanco);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background-color: var(--gris-claro);
+            font-weight: 500;
+        }
+
+        tbody tr:hover {
+            background-color: var(--gris-claro);
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .badge-docente {
+            background-color: #E3F2FD;
+            color: #1565C0;
+        }
+
+        .badge-alumno {
+            background-color: #E8F5E8;
+            color: #2E7D32;
+        }
+
+        .badge-admin {
+            background-color: #F3E5F5;
+            color: #7B1FA2;
+        }
+
+        .acciones {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--blanco);
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gris);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--azul-oscuro);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--cyan);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background-color: #E8F5E8;
+            color: #2E7D32;
+            border: 1px solid #C8E6C9;
+        }
+
+        .alert-error {
+            background-color: #FFEBEE;
+            color: #C62828;
+            border: 1px solid #FFCDD2;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            background-color: var(--gris-claro);
+        }
+
+        .footer {
+            background-color: var(--azul-oscuro);
+            color: var(--blanco);
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .filtros-container {
+                flex-direction: column;
+            }
+            
+            .filter-group {
+                min-width: 100%;
+            }
+            
+            .acciones {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <div class="logo">DETS</div>
+            <h1 class="title">Gestión de Personas - DETS</h1>
+        </div>
+        <div style="font-size: 0.9rem; opacity: 0.9;">
+            Sistema de Gestión Educativa
+        </div>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="nav-tab" onclick="navigateTo('principal')">Dashboard</button>
+        <button class="nav-tab" onclick="navigateTo('alumnos')">Alumnos</button>
+        <button class="nav-tab" onclick="navigateTo('docentes')">Docentes</button>
+        <button class="nav-tab" onclick="navigateTo('oferta')">Oferta Académica</button>
+        <button class="nav-tab" onclick="navigateTo('concursos')">Concursos</button>
+        <button class="nav-tab active" onclick="navigateTo('gestion-personas')">Gestión de Personas</button>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h2>Gestión de Personas del Sistema</h2>
+            <button class="btn btn-primary" onclick="abrirModalCrear()">
+                + Agregar Nueva Persona
+            </button>
+        </div>
+
+        <!-- Alertas -->
+        <div id="alertContainer"></div>
+
+        <!-- Filtros -->
+        <div class="filtros-container">
+            <div class="filter-group">
+                <label class="filter-label">Buscar por nombre o DNI</label>
+                <input type="text" class="filter-input" id="busqueda" placeholder="Nombre, apellido o DNI..." oninput="aplicarFiltros()">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Filtrar por rol</label>
+                <select class="filter-select" id="filtroRol" onchange="aplicarFiltros()">
+                    <option value="">Todos los roles</option>
+                    <option value="DOCENTE">Docente</option>
+                    <option value="ALUMNO">Alumno</option>
+                    <option value="ADMIN">Administrador</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <button class="btn btn-secondary" onclick="limpiarFiltros()">Limpiar Filtros</button>
+            </div>
+        </div>
+
+        <!-- Tabla de Personas -->
+        <div class="table-container">
+            <div class="table-header">
+                <h3>Lista de Personas</h3>
+                <div id="contadorPersonas">Cargando...</div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>DNI</th>
+                        <th>Nombre Completo</th>
+                        <th>Email</th>
+                        <th>Teléfono</th>
+                        <th>Rol</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaPersonas">
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 2rem;">
+                            Cargando datos...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="pagination">
+                <button class="btn btn-secondary" id="btnAnterior" onclick="cambiarPagina(-1)">Anterior</button>
+                <span id="infoPagina">Página 1 de 1</span>
+                <button class="btn btn-secondary" id="btnSiguiente" onclick="cambiarPagina(1)">Siguiente</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Crear/Editar Persona -->
+    <div class="modal" id="modalPersona">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitulo">Agregar Nueva Persona</h3>
+                <button class="close" onclick="cerrarModal()">&times;</button>
+            </div>
+            <form id="formPersona">
+                <div class="form-group">
+                    <label class="form-label">DNI *</label>
+                    <input type="text" class="form-input" id="dni" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nombre *</label>
+                    <input type="text" class="form-input" id="nombre" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Apellido *</label>
+                    <input type="text" class="form-input" id="apellido" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">CUIL</label>
+                    <input type="text" class="form-input" id="cuil">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Rol *</label>
+                    <select class="form-input" id="rol" required>
+                        <option value="">Seleccionar rol</option>
+                        <option value="DOCENTE">Docente</option>
+                        <option value="ALUMNO">Alumno</option>
+                        <option value="ADMIN">Administrador</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Teléfono</label>
+                    <input type="text" class="form-input" id="telefono">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="email">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Fecha de Nacimiento</label>
+                    <input type="date" class="form-input" id="fechaNacimiento">
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnSubmit">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>Ministerio de Educación - Ciudad Autónoma de Buenos Aires | Dirección de Educación Técnica Superior (DETS)</p>
+    </footer>
+
+    <script>
+        // Configuración
+const API_BASE = "http://127.0.0.1:8000";
+let personasData = [];
+let personaEditando = null;
+let paginaActual = 1;
+const personasPorPagina = 10;
+
+// Navegación
+function navigateTo(pagina) {
+    const pages = {
+        'alumnos': 'alumno.html',
+        'docentes': 'docente.html', 
+        'oferta': 'oferta.html',
+        'concursos': 'concurso.html',
+        'login': 'inicio.html',
+        'principal': 'pantallaprincipal.html',
+        'gestion-personas': 'gestion_personas.html'
+    };
+    
+    if (pages[pagina]) {
+        window.location.href = `/static/${pages[pagina]}`;
+    }
+}
+
+// Mostrar alerta
+function mostrarAlerta(mensaje, tipo = 'success') {
+    const alertContainer = document.getElementById('alertContainer');
+    const alertClass = tipo === 'success' ? 'alert-success' : 'alert-error';
+    
+    alertContainer.innerHTML = `
+        <div class="alert ${alertClass}">
+            ${mensaje}
+        </div>
+    `;
+    
+    setTimeout(() => {
+        alertContainer.innerHTML = '';
+    }, 5000);
+}
+
+// Cargar personas desde la API
+async function cargarPersonas() {
+    try {
+        console.log('🔍 Cargando personas desde API...');
+        
+        // ✅ AGREGAR LIMIT=500 para traer todas las personas
+        const respuesta = await fetch(`${API_BASE}/personas/?limit=500`);
+        console.log('📡 Status respuesta:', respuesta.status);
+        
+        if (!respuesta.ok) throw new Error('Error al cargar personas');
+        
+        const datos = await respuesta.json();
+        console.log('📊 Personas cargadas:', datos.length, 'registros');
+        
+        personasData = datos;
+        aplicarFiltros();
+        
+    } catch (error) {
+        console.error('❌ Error cargando personas:', error);
+        mostrarAlerta('Error al cargar las personas: ' + error.message, 'error');
+    }
+}
+
+// Aplicar filtros
+function aplicarFiltros() {
+    const busqueda = document.getElementById('busqueda').value.toLowerCase();
+    const filtroRol = document.getElementById('filtroRol').value;
+    
+    let personasFiltradas = personasData;
+    
+    // Filtrar por búsqueda
+    if (busqueda) {
+        personasFiltradas = personasFiltradas.filter(persona => 
+            persona.dni.toLowerCase().includes(busqueda) ||
+            persona.nombre.toLowerCase().includes(busqueda) ||
+            persona.apellido.toLowerCase().includes(busqueda)
+        );
+    }
+    
+    // Filtrar por rol
+    if (filtroRol) {
+        personasFiltradas = personasFiltradas.filter(persona => 
+            persona.rol === filtroRol
+        );
+    }
+    
+    mostrarPersonas(personasFiltradas);
+}
+
+// Mostrar personas en la tabla
+function mostrarPersonas(personas) {
+    const tbody = document.getElementById('tablaPersonas');
+    const inicio = (paginaActual - 1) * personasPorPagina;
+    const fin = inicio + personasPorPagina;
+    const personasPagina = personas.slice(inicio, fin);
+    
+    // Actualizar contador
+    document.getElementById('contadorPersonas').textContent = 
+        `${personas.length} persona${personas.length !== 1 ? 's' : ''} encontrada${personas.length !== 1 ? 's' : ''}`;
+    
+    if (personasPagina.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 2rem;">
+                    No se encontraron personas
+                </td>
+            </tr>
+        `;
+    } else {
+        tbody.innerHTML = personasPagina.map(persona => `
+            <tr>
+                <td>${persona.dni}</td>
+                <td>${persona.nombre} ${persona.apellido}</td>
+                <td>${persona.email || '-'}</td>
+                <td>${persona.telefono || '-'}</td>
+                <td>
+                    <span class="badge badge-${persona.rol.toLowerCase()}">
+                        ${persona.rol}
+                    </span>
+                </td>
+                <td class="acciones">
+                    <button class="btn btn-primary btn-small" onclick="editarPersona('${persona.dni}')">
+                        Editar
+                    </button>
+                    <button class="btn btn-danger btn-small" onclick="eliminarPersona('${persona.dni}')">
+                        Eliminar
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+    
+    // Actualizar paginación
+    actualizarPaginacion(personas.length);
+}
+
+// Actualizar paginación
+function actualizarPaginacion(totalPersonas) {
+    const totalPaginas = Math.ceil(totalPersonas / personasPorPagina);
+    const infoPagina = document.getElementById('infoPagina');
+    const btnAnterior = document.getElementById('btnAnterior');
+    const btnSiguiente = document.getElementById('btnSiguiente');
+    
+    infoPagina.textContent = `Página ${paginaActual} de ${totalPaginas}`;
+    btnAnterior.disabled = paginaActual === 1;
+    btnSiguiente.disabled = paginaActual === totalPaginas;
+}
+
+// Cambiar página
+function cambiarPagina(direccion) {
+    const totalPersonas = personasData.length;
+    const totalPaginas = Math.ceil(totalPersonas / personasPorPagina);
+    
+    paginaActual += direccion;
+    
+    if (paginaActual < 1) paginaActual = 1;
+    if (paginaActual > totalPaginas) paginaActual = totalPaginas;
+    
+    aplicarFiltros();
+}
+
+// Limpiar filtros
+function limpiarFiltros() {
+    document.getElementById('busqueda').value = '';
+    document.getElementById('filtroRol').value = '';
+    paginaActual = 1;
+    aplicarFiltros();
+}
+
+// Modal functions
+function abrirModalCrear() {
+    personaEditando = null;
+    document.getElementById('modalTitulo').textContent = 'Agregar Nueva Persona';
+    document.getElementById('btnSubmit').textContent = 'Guardar';
+    document.getElementById('formPersona').reset();
+    document.getElementById('modalPersona').style.display = 'flex';
+}
+
+function abrirModalEditar(persona) {
+    personaEditando = persona.dni;
+    document.getElementById('modalTitulo').textContent = 'Editar Persona';
+    document.getElementById('btnSubmit').textContent = 'Actualizar';
+    
+    // Llenar formulario con datos existentes
+    document.getElementById('dni').value = persona.dni;
+    document.getElementById('dni').readOnly = true; // No se puede editar DNI
+    document.getElementById('nombre').value = persona.nombre || '';
+    document.getElementById('apellido').value = persona.apellido || '';
+    document.getElementById('cuil').value = persona.cuil || '';
+    document.getElementById('rol').value = persona.rol || '';
+    document.getElementById('telefono').value = persona.telefono || '';
+    document.getElementById('email').value = persona.email || '';
+    document.getElementById('fechaNacimiento').value = persona.fecha_nacimiento || '';
+    
+    document.getElementById('modalPersona').style.display = 'flex';
+}
+
+function cerrarModal() {
+    document.getElementById('modalPersona').style.display = 'none';
+    document.getElementById('dni').readOnly = false; // Restaurar edición de DNI
+}
+
+// Editar persona
+async function editarPersona(dni) {
+    try {
+        const respuesta = await fetch(`${API_BASE}/personas/${dni}`);
+        if (!respuesta.ok) throw new Error('Error al cargar persona');
+        
+        const persona = await respuesta.json();
+        abrirModalEditar(persona);
+    } catch (error) {
+        console.error('Error:', error);
+        mostrarAlerta('Error al cargar los datos de la persona', 'error');
+    }
+}
+
+// Eliminar persona
+async function eliminarPersona(dni) {
+    if (!confirm('¿Estás seguro de que deseas eliminar esta persona? Esta acción no se puede deshacer.')) {
+        return;
+    }
+    
+    try {
+        const respuesta = await fetch(`${API_BASE}/personas/${dni}`, {
+            method: 'DELETE'
+        });
+        
+        if (!respuesta.ok) throw new Error('Error al eliminar persona');
+        
+        mostrarAlerta('Persona eliminada correctamente');
+        await cargarPersonas(); // Recargar lista
+    } catch (error) {
+        console.error('Error:', error);
+        mostrarAlerta('Error al eliminar la persona', 'error');
+    }
+}
+
+// Guardar persona (Crear o Actualizar)
+document.getElementById('formPersona').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    console.log('🔄 Iniciando guardado de persona...');
+    console.log('📝 Persona editando:', personaEditando);
+    
+    const formData = {
+        dni: document.getElementById('dni').value,
+        nombre: document.getElementById('nombre').value,
+        apellido: document.getElementById('apellido').value,
+        cuil: document.getElementById('cuil').value || null,
+        rol: document.getElementById('rol').value,
+        telefono: document.getElementById('telefono').value || null,
+        email: document.getElementById('email').value || null,
+        fecha_nacimiento: document.getElementById('fechaNacimiento').value || null
+    };
+    
+    console.log('📝 Datos del formulario:', formData);
+    
+    try {
+        let respuesta;
+        const url = personaEditando ? 
+            `${API_BASE}/personas/${personaEditando}` : 
+            `${API_BASE}/personas/`;
+            
+        const method = personaEditando ? 'PUT' : 'POST';
+        
+        console.log(`🌐 Llamando a API: ${method} ${url}`);
+        
+        respuesta = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        console.log('📡 Respuesta HTTP:', respuesta.status, respuesta.statusText);
+        
+        if (!respuesta.ok) {
+            const errorData = await respuesta.json();
+            console.error('❌ Error de API:', errorData);
+            throw new Error(errorData.detail || 'Error al guardar persona');
+        }
+        
+        const resultado = await respuesta.json();
+        console.log('✅ Persona guardada exitosamente:', resultado);
+        
+        mostrarAlerta(personaEditando ? 'Persona actualizada correctamente' : 'Persona creada correctamente');
+        cerrarModal();
+        
+        // Recargar lista con más logs
+        console.log('🔄 Recargando lista de personas...');
+        await cargarPersonas();
+        console.log('✅ Lista recargada');
+        
+    } catch (error) {
+        console.error('❌ Error completo:', error);
+        mostrarAlerta(error.message, 'error');
+    }
+});
+
+// Inicialización
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Página de gestión de personas cargada');
+    cargarPersonas();
+});
+
+// Cerrar modal al hacer clic fuera
+document.getElementById('modalPersona').addEventListener('click', function(e) {
+    if (e.target === this) {
+        cerrarModal();
+    }
+});
+    </script>
+</body>
+</html>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oferta Académica - Sistema de Gestión Educativa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Mismos estilos base que las otras pantallas */
+        :root {
+            --azul-oscuro: #153244;
+            --amarillo: #FFCC00;
+            --cyan: #8DE2D6;
+            --blanco: #FFFFFF;
+            --gris: #3C3C3B;
+            --gris-claro: #F5F5F5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Archivo', sans-serif;
+        }
+
+        body {
+            background-color: var(--gris-claro);
+            color: var(--azul-oscuro);
+        }
+
+        .header {
+            background-color: var(--azul-oscuro);
+            color: var(--blanco);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            height: 40px;
+            background-color: var(--blanco);
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .title {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .nav-tabs {
+            background: var(--blanco);
+            padding: 0 2rem;
+            border-bottom: 2px solid var(--cyan);
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-tab {
+            padding: 1rem 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--gris);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active {
+            color: var(--azul-oscuro);
+            border-bottom-color: var(--amarillo);
+        }
+
+        .container {
+            display: flex;
+            min-height: calc(100vh - 140px);
+        }
+
+        .filters-panel {
+            width: 320px;
+            background: var(--blanco);
+            padding: 1.5rem;
+            border-right: 2px solid var(--cyan);
+            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+
+        .filter-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--azul-oscuro);
+            font-size: 0.9rem;
+        }
+
+        .filter-select, .filter-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: var(--blanco);
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--amarillo);
+            color: var(--azul-oscuro);
+        }
+
+        .btn-secondary {
+            background-color: var(--gris);
+            color: var(--blanco);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--blanco);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+            border-left: 4px solid var(--cyan);
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            color: var(--gris);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--azul-oscuro);
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: var(--blanco);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+
+        .table-container {
+            background: var(--blanco);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 1rem 1.5rem;
+            background-color: var(--azul-oscuro);
+            color: var(--blanco);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer {
+            background-color: var(--azul-oscuro);
+            color: var(--blanco);
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            .filters-panel {
+                width: 100%;
+                border-right: none;
+                border-bottom: 2px solid var(--cyan);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <div class="logo">BA</div>
+            <h1 class="title">Oferta Académica - DETS</h1>
+        </div>
+        <div style="font-size: 0.9rem; opacity: 0.9;">
+            Sistema de Gestión Educativa
+        </div>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="nav-tab" onclick="navigateTo('principal')">Dashboard</button>
+        <button class="nav-tab active" onclick="navigateTo('alumnos')">Alumnos</button>
+        <button class="nav-tab" onclick="navigateTo('docentes')">Docentes</button>
+        <button class="nav-tab" onclick="navigateTo('oferta')">Oferta Académica</button>
+        <button class="nav-tab" onclick="navigateTo('concursos')">Concursos</button>
+        <button class="nav-tab" onclick="navigateTo('gestion-personas')">Gestión de Personas</button>
+        
+    </nav>
+
+    <div class="container">
+        <aside class="filters-panel">
+            <div class="filter-group">
+                <label class="filter-label">Año Académico</label>
+                <select class="filter-select" id="anio-academico">
+                    <option value="">Todos los años</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">IFTS</label>
+                <select class="filter-select" id="ifts">
+                    <option value="">Todos los IFTS</option>
+                    <option value="IFTS 16">IFTS 16</option>
+                    <option value="IFTS 18">IFTS 18</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Carrera</label>
+                <select class="filter-select" id="carrera">
+                    <option value="">Todas las carreras</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Modalidad</label>
+                <select class="filter-select" id="modalidad">
+                    <option value="">Todas las modalidades</option>
+                    <option value="Presencial">Presencial</option>
+                    <option value="Virtual">Virtual</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Turno</label>
+                <select class="filter-select" id="turno">
+                    <option value="">Todos los turnos</option>
+                    <option value="Mañana">Mañana</option>
+                    <option value="Tarde">Tarde</option>
+                    <option value="Noche">Noche</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Estado de Oferta</label>
+                <select class="filter-select" id="estado-oferta">
+                    <option value="">Todos los estados</option>
+                    <option value="Activa">Activa</option>
+                    <option value="Inactiva">Inactiva</option>
+                    <option value="En Planificación">En Planificación</option>
+                </select>
+            </div>
+
+            <div class="filter-buttons">
+                <button class="btn btn-primary" onclick="aplicarFiltros()">Aplicar Filtros</button>
+                <button class="btn btn-secondary" onclick="limpiarFiltros()">Restablecer</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <!-- Tarjetas Resumen -->
+            <div class="summary-cards">
+                <div class="card">
+                    <div class="card-title">Total Carreras</div>
+                    <div class="card-value" id="total-carreras">12</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Carreras Activas</div>
+                    <div class="card-value" id="carreras-activas">8</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Total Inscripciones</div>
+                    <div class="card-value" id="total-inscripciones">1,245</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Nuevos Inscriptos</div>
+                    <div class="card-value" id="nuevos-inscriptos">156</div>
+                </div>
+            </div>
+
+            <!-- Contenido Principal -->
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Ofertas Académicas Disponibles</h3>
+                    <div class="table-actions">
+                        <button class="btn btn-export" onclick="exportarCSV()">Exportar CSV</button>
+                        <button class="btn btn-export" onclick="exportarPDF()">Exportar PDF</button>
+                    </div>
+                </div>
+                <div style="padding: 2rem; text-align: center; color: var(--gris);">
+                    <h3>Módulo de Oferta Académica</h3>
+                    <p>Esta sección está en desarrollo. Próximamente podrás gestionar carreras y planes de estudio.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Ministerio de Educación - Ciudad Autónoma de Buenos Aires | Dirección de Educación Técnica Superior (DETS)</p>
+    </footer>
+
+    <script>
+    function navigateTo(pagina) {
+        const pages = {
+            'alumnos': 'alumno.html',
+            'docentes': 'docente.html', 
+            'oferta': 'oferta.html',
+            'concursos': 'concurso.html',
+            'login': 'inicio.html',
+            'principal': 'pantallaprincipal.html',
+            'gestion-personas': 'gestion_personas.html'
+        };
+        
+        if (pages[pagina]) {
+            window.location.href = `/static/${pages[pagina]}`;
+        }
+    }
+
+    function aplicarFiltros() {
+        console.log("Aplicando filtros...");
+    }
+
+    function limpiarFiltros() {
+        document.querySelectorAll('.filter-select').forEach(select => {
+            select.value = '';
+        });
+    }
+
+    function exportarCSV() {
+        alert('Exportando CSV...');
+    }
+
+    function exportarPDF() {
+        alert('Exportando PDF...');
+    }
+    </script>
+</body>
+</html>

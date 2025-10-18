@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oferta Académica - Sistema de Gestión Educativa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --azul-oscuro: #153244;
+            --amarillo: #FFCC00;
+            --cyan: #8DE2D6;
+            --blanco: #FFFFFF;
+            --gris: #3C3C3B;
+            --gris-claro: #F5F5F5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Archivo', sans-serif;
+        }
+
+        body {
+            background-color: var(--gris-claro);
+            color: var(--azul-oscuro);
+        }
+
+        .header {
+            background-color: var(--azul-oscuro);
+            color: var(--blanco);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            height: 40px;
+            background-color: var(--blanco);
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .title {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .nav-tabs {
+            background: var(--blanco);
+            padding: 0 2rem;
+            border-bottom: 2px solid var(--cyan);
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-tab {
+            padding: 1rem 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--gris);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active {
+            color: var(--azul-oscuro);
+            border-bottom-color: var(--amarillo);
+        }
+
+        .main-content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .coming-soon {
+            background: var(--blanco);
+            padding: 3rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+        }
+
+        .coming-soon h2 {
+            color: var(--azul-oscuro);
+            margin-bottom: 1rem;
+        }
+
+        .coming-soon p {
+            color: var(--gris);
+            line-height: 1.6;
+        }
+
+        .footer {
+            background-color: var(--azul-oscuro);
+            color: var(--blanco);
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <div class="logo">BA</div>
+            <h1 class="title">Oferta Académica - DETS</h1>
+        </div>
+        <div style="font-size: 0.9rem; opacity: 0.9;">
+            Sistema de Gestión Educativa
+        </div>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="nav-tab" onclick="navigateTo('principal')">Dashboard</button>
+        <button class="nav-tab" onclick="navigateTo('alumnos')">Alumnos</button>
+        <button class="nav-tab" onclick="navigateTo('docentes')">Docentes</button>
+        <button class="nav-tab active" onclick="navigateTo('oferta')">Oferta Académica</button>
+        <button class="nav-tab" onclick="navigateTo('concursos')">Concursos</button>
+        <button class="nav-tab" onclick="navigateTo('gestion-personas')">Gestión de Personas</button>
+    </nav>
+
+    <main class="main-content">
+        <div class="coming-soon">
+            <h2>Módulo de Oferta Académica</h2>
+            <p>Esta sección está actualmente en desarrollo. Próximamente podrás gestionar carreras, planes de estudio, 
+               materias y toda la oferta académica de los IFTS.</p>
+            <p style="margin-top: 1rem;"><strong>Funcionalidades próximas:</strong></p>
+            <ul style="text-align: left; display: inline-block; margin-top: 0.5rem;">
+                <li>Gestión de carreras y especialidades</li>
+                <li>Planes de estudio y correlatividades</li>
+                <li>Materias y programas</li>
+                <li>Horarios y turnos</li>
+            </ul>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>Ministerio de Educación - Ciudad Autónoma de Buenos Aires | Dirección de Educación Técnica Superior (DETS)</p>
+    </footer>
+
+    <script>
+    function navigateTo(pagina) {
+        const pages = {
+            'alumnos': 'alumno.html',
+            'docentes': 'docente.html', 
+            'oferta': 'oferta.html',
+            'concursos': 'concurso.html',
+            'login': 'inicio.html',
+            'principal': 'pantallaprincipal.html',
+            'gestion-personas': 'gestion_personas.html'
+        };
+        
+        if (pages[pagina]) {
+            window.location.href = `/static/${pages[pagina]}`;
+        }
+    }
+    </script>
+</body>
+</html>

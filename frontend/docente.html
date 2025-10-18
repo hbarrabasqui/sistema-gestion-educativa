@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Docentes - Sistema de Gestión Educativa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --azul-oscuro: #153244;
+            --amarillo: #FFCC00;
+            --cyan: #8DE2D6;
+            --blanco: #FFFFFF;
+            --gris: #3C3C3B;
+            --gris-claro: #F5F5F5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Archivo', sans-serif;
+        }
+
+        body {
+            background-color: var(--gris-claro);
+            color: var(--azul-oscuro);
+        }
+
+        /* Header */
+        .header {
+            background-color: var(--azul-oscuro);
+            color: var(--blanco);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            height: 40px;
+            background-color: var(--blanco);
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .title {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        /* Navegación */
+        .nav-tabs {
+            background: var(--blanco);
+            padding: 0 2rem;
+            border-bottom: 2px solid var(--cyan);
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-tab {
+            padding: 1rem 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--gris);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active {
+            color: var(--azul-oscuro);
+            border-bottom-color: var(--amarillo);
+        }
+
+        .nav-tab:hover {
+            color: var(--azul-oscuro);
+        }
+
+        /* Layout Principal */
+        .container {
+            display: flex;
+            min-height: calc(100vh - 140px);
+        }
+
+        /* Panel de Filtros */
+        .filters-panel {
+            width: 320px;
+            background: var(--blanco);
+            padding: 1.5rem;
+            border-right: 2px solid var(--cyan);
+            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+
+        .filter-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--azul-oscuro);
+            font-size: 0.9rem;
+        }
+
+        .filter-select, .filter-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: var(--blanco);
+            font-size: 0.9rem;
+        }
+
+        .filter-select:focus, .filter-input:focus {
+            outline: none;
+            border-color: var(--cyan);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--amarillo);
+            color: var(--azul-oscuro);
+        }
+
+        .btn-secondary {
+            background-color: var(--gris);
+            color: var(--blanco);
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* Área Principal */
+        .main-content {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        /* Tarjetas Resumen */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--blanco);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+            border-left: 4px solid var(--cyan);
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            color: var(--gris);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--azul-oscuro);
+        }
+
+        /* Gráficos */
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: var(--blanco);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .chart-title {
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: var(--azul-oscuro);
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+
+        /* Tabla */
+        .table-container {
+            background: var(--blanco);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 1rem 1.5rem;
+            background-color: var(--azul-oscuro);
+            color: var(--blanco);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-export {
+            background-color: var(--cyan);
+            color: var(--azul-oscuro);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--gris-claro);
+            font-weight: 500;
+            cursor: pointer;
+            position: relative;
+        }
+
+        th:hover {
+            background-color: #e0e0e0;
+        }
+
+        th::after {
+            content: '↕';
+            position: absolute;
+            right: 10px;
+            opacity: 0.5;
+        }
+
+        tbody tr:hover {
+            background-color: var(--gris-claro);
+        }
+
+        .estado-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .estado-activo {
+            background-color: #E8F5E8;
+            color: #2E7D32;
+        }
+
+        .estado-inactivo {
+            background-color: #FFEBEE;
+            color: #C62828;
+        }
+
+        .estado-concurso {
+            background-color: #E3F2FD;
+            color: #1565C0;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--azul-oscuro);
+            color: var(--blanco);
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .filters-panel {
+                width: 100%;
+                border-right: none;
+                border-bottom: 2px solid var(--cyan);
+                max-height: 400px;
+            }
+
+            .summary-cards {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .nav-tabs {
+                overflow-x: auto;
+                padding: 0 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .table-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-container">
+            <div class="logo">BA</div>
+            <h1 class="title">Reporte de Docentes - DETS</h1>
+        </div>
+        <div style="font-size: 0.9rem; opacity: 0.9;">
+            Sistema de Gestión Educativa
+        </div>
+    </header>
+
+    <!-- Navegación -->
+    <nav class="nav-tabs">
+        <button class="nav-tab" onclick="navigateTo('principal')">Dashboard</button>
+        <button class="nav-tab" onclick="navigateTo('alumnos')">Alumnos</button>
+        <button class="nav-tab active" onclick="navigateTo('docentes')">Docentes</button>
+        <button class="nav-tab" onclick="navigateTo('oferta')">Oferta Académica</button>
+        <button class="nav-tab" onclick="navigateTo('concursos')">Concursos</button>
+        <button class="nav-tab" onclick="navigateTo('gestion-personas')">Gestión de Personas</button>
+    </nav>
+
+    <!-- Layout Principal -->
+    <div class="container">
+        <!-- Panel de Filtros -->
+        <aside class="filters-panel">
+            <div class="filter-group">
+                <label class="filter-label">Año Académico</label>
+                <select class="filter-select" id="anio-academico">
+                    <option value="">Todos los años</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">IFTS</label>
+                <select class="filter-select" id="ifts">
+                    <option value="">Todos los IFTS</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Carrera</label>
+                <select class="filter-select" id="carrera">
+                    <option value="">Todas las carreras</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Estado del Docente</label>
+                <select class="filter-select" id="estado-docente">
+                    <option value="">Todos los estados</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Supervisión</label>
+                <select class="filter-select" id="supervision">
+                    <option value="">Todas las supervisiones</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Materia</label>
+                <select class="filter-select" id="materia">
+                    <option value="">Todas las materias</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="filter-label">Tipo de Contrato</label>
+                <select class="filter-select" id="tipo-contrato">
+                    <option value="">Todos los tipos</option>
+                </select>
+            </div>
+
+            <div class="filter-buttons">
+                <button class="btn btn-primary" onclick="aplicarFiltros()">Aplicar Filtros</button>
+                <button class="btn btn-secondary" onclick="limpiarFiltros()">Restablecer</button>
+            </div>
+        </aside>
+
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <!-- Tarjetas Resumen -->
+            <div class="summary-cards">
+                <div class="card">
+                    <div class="card-title">Total Docentes</div>
+                    <div class="card-value" id="total-docentes">0</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Docentes Activos</div>
+                    <div class="card-value" id="docentes-activos">0</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Tasa de Rotación</div>
+                    <div class="card-value" id="tasa-rotacion">0%</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">En Concursos</div>
+                    <div class="card-value" id="en-concursos">0</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Horas Cátedra Total</div>
+                    <div class="card-value" id="horas-catedra">0</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Promedio Experiencia</div>
+                    <div class="card-value" id="experiencia-promedio">0 años</div>
+                </div>
+            </div>
+
+            <!-- Gráficos -->
+            <div class="charts-container">
+                <div class="chart-card">
+                    <div class="chart-title">Distribución de Docentes por IFTS</div>
+                    <div class="chart-container">
+                        <canvas id="chart-distribucion-ifts"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">Tipo de Contrato</div>
+                    <div class="chart-container">
+                        <canvas id="chart-tipo-contrato"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="charts-container">
+                <div class="chart-card">
+                    <div class="chart-title">Evolución de Plantel Docente</div>
+                    <div class="chart-container">
+                        <canvas id="chart-evolucion-plantel"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">Distribución por Experiencia</div>
+                    <div class="chart-container">
+                        <canvas id="chart-experiencia"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de Datos -->
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Detalle de Docentes</h3>
+                    <div class="table-actions">
+                        <button class="btn btn-export" onclick="exportarCSV()">Exportar CSV</button>
+                        <button class="btn btn-export" onclick="exportarPDF()">Exportar PDF</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th onclick="ordenarTabla(0)">DNI</th>
+                            <th onclick="ordenarTabla(1)">Nombre Completo</th>
+                            <th onclick="ordenarTabla(2)">IFTS</th>
+                            <th onclick="ordenarTabla(3)">Carrera</th>
+                            <th onclick="ordenarTabla(4)">Materia</th>
+                            <th onclick="ordenarTabla(5)">Tipo Contrato</th>
+                            <th onclick="ordenarTabla(6)">Horas Cátedra</th>
+                            <th onclick="ordenarTabla(7)">Estado</th>
+                            <th onclick="ordenarTabla(8)">Años Experiencia</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-docentes">
+                        <!-- Datos se cargan dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Ministerio de Educación - Ciudad Autónoma de Buenos Aires | Dirección de Educación Técnica Superior (DETS)</p>
+    </footer>
+
+    <script>
+        ///////////////////////
+////////////////////////////////////////////
+        /// Borrar datos mock !!!!!!
+        // Datos mock para docentes
+        const datosDocentes = {
+            docentes: [
+                {
+                    dni: "25123456",
+                    nombre: "Laura",
+                    apellido: "Gutiérrez",
+                    ifts: "IFTS 18",
+                    carrera: "Tecnicatura Superior en Análisis de Sistemas",
+                    materia: "Programación I",
+                    tipo_contrato: "Titular",
+                    horas_catedra: 20,
+                    estado: "Activo",
+                    experiencia: 8,
+                    supervision: "Supervisión A",
+                    fecha_ingreso: "2016-03-01",
+                    email: "laura.gutierrez@example.com"
+                },
+                {
+                    dni: "28123457",
+                    nombre: "Roberto",
+                    apellido: "Silva",
+                    ifts: "IFTS 16",
+                    carrera: "Tecnicatura Superior en Análisis de Datos",
+                    materia: "Estadística",
+                    tipo_contrato: "Interino",
+                    horas_catedra: 15,
+                    estado: "Activo",
+                    experiencia: 5,
+                    supervision: "Supervisión B",
+                    fecha_ingreso: "2019-08-15",
+                    email: "roberto.silva@example.com"
+                },
+                {
+                    dni: "30123458",
+                    nombre: "Marta",
+                    apellido: "Díaz",
+                    ifts: "IFTS 22",
+                    carrera: "Tecnicatura Superior en Redes",
+                    materia: "Infraestructura de Redes",
+                    tipo_contrato: "Suplente",
+                    horas_catedra: 10,
+                    estado: "En Concurso",
+                    experiencia: 12,
+                    supervision: "Supervisión A",
+                    fecha_ingreso: "2012-02-10",
+                    email: "marta.diaz@example.com"
+                },
+                {
+                    dni: "27123459",
+                    nombre: "Carlos",
+                    apellido: "Mendoza",
+                    ifts: "IFTS 25",
+                    carrera: "Tecnicatura Superior en Desarrollo Software",
+                    materia: "Base de Datos",
+                    tipo_contrato: "Titular",
+                    horas_catedra: 18,
+                    estado: "Inactivo",
+                    experiencia: 15,
+                    supervision: "Supervisión C",
+                    fecha_ingreso: "2009-03-20",
+                    email: "carlos.mendoza@example.com"
+                }
+            ],
+            ifts: ["IFTS 16", "IFTS 18", "IFTS 22", "IFTS 25"],
+            carreras: [
+                "Tecnicatura Superior en Análisis de Sistemas", 
+                "Tecnicatura Superior en Análisis de Datos", 
+                "Tecnicatura Superior en Redes", 
+                "Tecnicatura Superior en Desarrollo Software"
+            ],
+            estados: ["Activo", "Inactivo", "En Concurso", "Licencia"],
+            supervisiones: ["Supervisión A", "Supervisión B", "Supervisión C"],
+            materias: ["Programación I", "Estadística", "Infraestructura de Redes", "Base de Datos", "Sistemas Operativos"],
+            tiposContrato: ["Titular", "Interino", "Suplente", "Contratado"],
+            anios: [2024, 2023, 2022, 2021, 2020]
+        };
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarFiltrosDocentes();
+            actualizarDashboardDocentes();
+        });
+
+        function cargarFiltrosDocentes() {
+            cargarOpciones('anio-academico', datosDocentes.anios);
+            cargarOpciones('ifts', datosDocentes.ifts);
+            cargarOpciones('carrera', datosDocentes.carreras);
+            cargarOpciones('estado-docente', datosDocentes.estados);
+            cargarOpciones('supervision', datosDocentes.supervisiones);
+            cargarOpciones('materia', datosDocentes.materias);
+            cargarOpciones('tipo-contrato', datosDocentes.tiposContrato);
+        }
+
+        function cargarOpciones(selectId, opciones) {
+            const select = document.getElementById(selectId);
+            while (select.children.length > 1) {
+                select.removeChild(select.lastChild);
+            }
+            
+            opciones.forEach(opcion => {
+                const option = document.createElement('option');
+                option.value = opcion;
+                option.textContent = opcion;
+                select.appendChild(option);
+            });
+        }
+
+        function aplicarFiltros() {
+            actualizarDashboardDocentes();
+        }
+
+        function limpiarFiltros() {
+            document.querySelectorAll('.filter-select').forEach(select => {
+                select.value = '';
+            });
+            actualizarDashboardDocentes();
+        }
+
+        function actualizarDashboardDocentes() {
+            const datosFiltrados = filtrarDatosDocentes();
+            actualizarTarjetasDocentes(datosFiltrados);
+            actualizarGraficosDocentes(datosFiltrados);
+            actualizarTablaDocentes(datosFiltrados);
+        }
+
+        function filtrarDatosDocentes() {
+            const ifts = document.getElementById('ifts').value;
+            const carrera = document.getElementById('carrera').value;
+            const estado = document.getElementById('estado-docente').value;
+            const supervision = document.getElementById('supervision').value;
+            const materia = document.getElementById('materia').value;
+            const tipoContrato = document.getElementById('tipo-contrato').value;
+
+            return datosDocentes.docentes.filter(docente => {
+                return (!ifts || docente.ifts === ifts) &&
+                       (!carrera || docente.carrera === carrera) &&
+                       (!estado || docente.estado === estado) &&
+                       (!supervision || docente.supervision === supervision) &&
+                       (!materia || docente.materia === materia) &&
+                       (!tipoContrato || docente.tipo_contrato === tipoContrato);
+            });
+        }
+
+        function actualizarTarjetasDocentes(datos) {
+            const totalDocentes = datos.length;
+            const docentesActivos = datos.filter(d => d.estado === "Activo").length;
+            const enConcursos = datos.filter(d => d.estado === "En Concurso").length;
+            const horasCatedra = datos.reduce((sum, d) => sum + d.horas_catedra, 0);
+            const experienciaPromedio = datos.length > 0 ? 
+                Math.round(datos.reduce((sum, d) => sum + d.experiencia, 0) / datos.length) : 0;
+
+            document.getElementById('total-docentes').textContent = totalDocentes;
+            document.getElementById('docentes-activos').textContent = docentesActivos;
+            document.getElementById('tasa-rotacion').textContent = "12%"; // Mock
+            document.getElementById('en-concursos').textContent = enConcursos;
+            document.getElementById('horas-catedra').textContent = horasCatedra;
+            document.getElementById('experiencia-promedio').textContent = experienciaPromedio + " años";
+        }
+
+        function actualizarGraficosDocentes(datos) {
+            // Implementar gráficos similares a la pantalla de alumnos
+            console.log("Actualizando gráficos de docentes", datos);
+        }
+
+        function actualizarTablaDocentes(datos) {
+            const tbody = document.getElementById('tabla-docentes');
+            tbody.innerHTML = '';
+
+            datos.forEach(docente => {
+                const tr = document.createElement('tr');
+                
+                let estadoClass = 'estado-badge ';
+                if (docente.estado === 'Activo') {
+                    estadoClass += 'estado-activo';
+                } else if (docente.estado === 'En Concurso') {
+                    estadoClass += 'estado-concurso';
+                } else {
+                    estadoClass += 'estado-inactivo';
+                }
+                
+                tr.innerHTML = `
+                    <td>${docente.dni}</td>
+                    <td>${docente.nombre} ${docente.apellido}</td>
+                    <td>${docente.ifts}</td>
+                    <td>${docente.carrera}</td>
+                    <td>${docente.materia}</td>
+                    <td>${docente.tipo_contrato}</td>
+                    <td>${docente.horas_catedra}</td>
+                    <td><span class="${estadoClass}">${docente.estado}</span></td>
+                    <td>${docente.experiencia}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function ordenarTabla(colIndex) {
+            // Implementar ordenación similar a la pantalla de alumnos
+        }
+
+        function exportarCSV() {
+            alert('Exportando CSV de docentes...');
+        }
+
+        function exportarPDF() {
+            alert('Exportando PDF de docentes...');
+        }
+
+        function navigateTo(pantalla) {
+            // Navegación entre pantallas
+            if (pantalla === 'alumnos') {
+                window.location.href = 'reporte_alumnos.html';
+            } else if (pantalla === 'docentes') {
+                // Ya estamos aquí
+            } else if (pantalla === 'oferta') {
+                window.location.href = 'reporte_oferta.html';
+            } else if (pantalla === 'concursos') {
+                window.location.href = 'reporte_concursos.html';
+            }
+        }
+    </script>
+    
+    <script>
+function navigateTo(pagina) {
+    const pages = {
+        'alumnos': 'alumno.html',
+        'docentes': 'docente.html', 
+        'oferta': 'oferta.html',
+        'concursos': 'concurso.html',
+        'login': 'inicio.html',
+        'principal': 'pantallaprincipal.html',
+        'gestion-personas': 'gestion_personas.html'
+    };
+    
+    if (pages[pagina]) {
+        window.location.href = `/static/${pages[pagina]}`;
+    }
+}
+</script>
+</body>
+</html>
